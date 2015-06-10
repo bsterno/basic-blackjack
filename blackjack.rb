@@ -1,6 +1,6 @@
 class Card
-
   attr_reader :value, :suit
+
   def initialize(value, suit)
     @value = value
     @suit = suit
@@ -19,8 +19,8 @@ class Card
 end
 
 class Deck
-
   attr_reader :cards
+
   def initialize
     @cards = Deck.create_cards
   end
@@ -28,12 +28,12 @@ class Deck
   def self.create_cards
     cards = []
     suits = ['spades', 'hearts', 'clubs', 'diamonds']
-    suits.each do |suit|
+      suits.each do |suit|
     values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A']
-    values.each do |value|
+      values.each do |value|
       cards << Card.new(value, suit)
-    end
-    end
+      end
+      end
     cards.shuffle
   end
 
@@ -110,7 +110,6 @@ class Game
     if dealer_value == player_value && (dealer_value <= 21) && (player_value <= 21)
       puts "It's a tie!"
     end
-
   end
 
   def self.play
