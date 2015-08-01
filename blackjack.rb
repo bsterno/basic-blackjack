@@ -1,3 +1,5 @@
+require 'pry'
+
 class Card
   attr_reader :value, :suit
 
@@ -39,6 +41,7 @@ class Deck
 
 end
 
+
 class Hand
   attr_reader :cards
 
@@ -53,7 +56,11 @@ class Hand
   def value
     value = 0
     @cards.each do |card|
-      value += card.value
+      if card.value == 11 && value > 11
+        value += 1
+      else
+        value += card.value
+      end
     end
     value
   end
@@ -67,8 +74,10 @@ class Game
     @deck = Deck.new
     @player_hand = Hand.new
     @dealer_hand = Hand.new
-    2.times { @player_hand.pick_card_from_deck!(@deck) }
-    2.times { @dealer_hand.pick_card_from_deck!(@deck) }
+    2.times do
+      @player_hand.pick_card_from_deck!(@deck)
+      @dealer_hand.pick_card_from_deck!(@deck)
+    end
   end
 
   def hit
@@ -81,58 +90,63 @@ class Game
 
   def status
     puts "Your cards:"
-    @player_hand.cards.each { |card| p card.to_s }
+    @player_hand.cards.each do |card|
+      puts card.to_s
+    end
     puts "Your hand value: #{player_hand.value}"
     puts
     puts "Dealers cards:"
-    @dealer_hand.cards.each { |card| p card.to_s }
-    puts "Dealer hand value: #{dealer_hand.value}\n"
+    @dealer_hand.cards.each do |card|
+      puts card.to_s
+    end
+    puts "Dealer hand value: #{dealer_hand.value}"
+    puts
   end
 
   def determine_winner(player_value, dealer_value)
     if player_value == 21
-      puts "BLACKJACK, you win!"
-    end
-    if player_value > 21
-      puts "Player busts!"
+      puts "BLACKJACK, YOU WIN!"
+    elsif dealer_value == 21
+      puts "BLACKJACK, DEALER WINS!"
+    elsif player_value > 21
+      puts "You bust!"
       puts "Dealer wins!"
-    end
-    if dealer_value > 21
+    elsif dealer_value > 21
       puts "Dealer busts!"
-      puts "Player wins!"
-    end
-    if player_value < 21 && (player_value > dealer_value)
-      puts "Player wins!"
-    end
-    if dealer_value <= 21 && (dealer_value > player_value)
+      puts "You win!"
+    elsif player_value < 21 && (player_value > dealer_value)
+      puts "You win!"
+    elsif dealer_value <= 21 && (dealer_value > player_value)
       puts "Dealer wins!"
-    end
-    if dealer_value == player_value && (dealer_value <= 21) && (player_value <= 21)
+    else dealer_value == player_value && (dealer_value <= 21) && (player_value <= 21)
       puts "It's a tie!"
     end
   end
 
   def self.play
+    game = Game.new
     puts "Lets play MY game of BlackJack!"
     puts
-    game = Game.new
-    print game.status
+    game.status
     puts
-    puts "Hit or stay (h/s):"
     while true
-      choice = gets.chomp
-      if choice == "h"
-        game.hit
-        print game.status
-        puts
-        puts "Hit or stay(h/s):"
-      elsif choice == "s"
-        while (game.dealer_hand.value < 17) && (game.player_hand.value < 22) do
-          game.stand
-          print game.status
-          puts
-        end
+      if (game.player_hand.value >= 21) || (game.dealer_hand.value >= 21)
         return game.determine_winner(game.player_hand.value, game.dealer_hand.value)
+      else
+        puts "Hit or stay (h/s):"
+        choice = gets.chomp
+        if choice.downcase == "h"
+          game.hit
+          game.status
+          puts
+        else
+          until game.dealer_hand.value >= 17
+            game.stand
+            print game.status
+            puts
+          end
+            return game.determine_winner(game.player_hand.value, game.dealer_hand.value)
+        end
       end
     end
   end

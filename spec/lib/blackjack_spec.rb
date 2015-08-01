@@ -1,4 +1,3 @@
-require "rspec"
 require_relative "../../blackjack"
 
 describe Card do
@@ -52,4 +51,11 @@ describe Game do
     game.hit
     expect(game.player_hand.cards.length).to eq(3)
   end
+
+  it "should be able to stand" do
+    game = Game.new
+    game.stand
+    expect(game.dealer_hand.cards.length).to eq(3)
+  end
+
 end
